@@ -1,0 +1,77 @@
+!DOCTYPE html
+html lang=pt-br
+head
+meta charset=UTF-8
+titleNo Meu Bairro Tem 🏡title
+meta name=viewport content=width=device-width, initial-scale=1
+style
+body { font-family sans-serif; margin 0; padding 20px; text-align center; }
+h1 { margin-bottom 20px; }
+.tab-btn { padding 10px 20px; margin 5px; cursor pointer; border-radius 5px; border none; background-color #007BFF; color white; }
+.tab-btnhover { background-color #0056b3; }
+.secao { display none; margin-top 20px; }
+.item { border 1px solid #ccc; padding 10px; margin 10px auto; width 300px; border-radius 8px; text-align left; }
+iframe { margin-top 10px; width 100%; height 200px; border0; border-radius 5px; }
+#busca { margin-top 20px; padding 8px; width 90%; max-width 400px; border-radius 5px; border1px solid #ccc; }
+style
+head
+body
+
+h1No Meu Bairro Tem 🏡h1
+
+div
+    button class=tab-btn onclick=mostrarSecao('comercio')Comércio 🏪button
+    button class=tab-btn onclick=mostrarSecao('servicos')Serviços 🛠️button
+    button class=tab-btn onclick=mostrarSecao('escolas')Escolas 🎓button
+div
+
+input type=text id=busca placeholder=Buscar por nome ou endereço... onkeyup=filtrar()
+
+div id=comercio class=secaodiv
+div id=servicos class=secaodiv
+div id=escolas class=secaodiv
+
+script
+let dados = {
+    comercio JSON.parse(localStorage.getItem('comercios')  '[]'),
+    servicos JSON.parse(localStorage.getItem('servicos')  '[]'),
+    escolas JSON.parse(localStorage.getItem('escolas')  '[]')
+};
+let secaoAtual = 'comercio';
+
+function mostrarSecao(secao) {
+    document.querySelectorAll('.secao').forEach(s = s.style.display = 'none');
+    document.getElementById(secao).style.display = 'block';
+    secaoAtual = secao;
+    carregarSecao(secao);
+}
+
+function criarItem(c) {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `strong${c.nome}strongbr${c.endereco}br${c.telefone  ''}br
+                     iframe src=httpswww.google.commapsembedv1placekey=SUA_CHAVE_API&q=${encodeURIComponent(c.endereco)} allowfullscreeniframe`;
+    return div;
+}
+
+function carregarSecao(secao) {
+    const container = document.getElementById(secao);
+    container.innerHTML = '';
+    dados[secao].forEach(c = container.appendChild(criarItem(c)));
+}
+
+function filtrar() {
+    const filtro = document.getElementById('busca').value.toLowerCase();
+    const container = document.getElementById(secaoAtual);
+    container.innerHTML = '';
+    dados[secaoAtual]
+        .filter(c = c.nome.toLowerCase().includes(filtro)  c.endereco.toLowerCase().includes(filtro))
+        .forEach(c = container.appendChild(criarItem(c)));
+}
+
+ Inicializar
+mostrarSecao('comercio');
+script
+
+body
+html

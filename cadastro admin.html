@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Admin - No Meu Bairro Tem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family:sans-serif; margin:0; padding:20px; background:#f9f9f9; text-align:center; }
+h1 { margin-bottom:20px; }
+form { background:white; padding:20px; border-radius:10px; display:inline-block; text-align:left; margin-bottom:20px; }
+input, select { width:100%; padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc; }
+button { padding:10px 20px; border:none; border-radius:5px; background:#007BFF; color:white; cursor:pointer; margin-top:5px; }
+button:hover { background:#0056b3; }
+.item { border:1px solid #ccc; padding:10px; margin:10px auto; width:300px; border-radius:8px; text-align:left; background:white; }
+iframe { width:100%; height:200px; border:0; border-radius:5px; margin-top:5px; }
+.logout { position:absolute; top:10px; right:10px; background:#dc3545; }
+.logout:hover { background:#a71d2a; }
+</style>
+</head>
+<body>
+
+<script>
+// Verificar login
+if(localStorage.getItem('logado') !== 'true'){
+    alert('Acesso negado! Faça login primeiro.');
+    window.location.href = "login.html";
+}
+</script>
+
+<h1>Admin - No Meu Bairro Tem</h1>
+<button class="logout" onclick="logout()">Sair</button>
+
+<form id="formCadastro">
+    <h3>Cadastrar Novo Item</h3>
+    <input type="text" id="nome" placeholder="Nome" required>
+    <input type="text" id="endereco" placeholder="Endereço" required>
+    <input type="text" id="telefone" placeholder="Telefone">
+    <select id="categoria" required>
+        <option value="">Selecione Categoria</option>
+        <option value="comercio">Comércio</option>
+        <option value="servicos">Serviços</option>
+        <option value="escolas">Escolas</option>
+    </select>
+    <button type="submit">Cadastrar</button>
+</form>
+
+<div id="listaItens"></div>
+
+<script>
+function logout() {
+    localStorage.removeItem('logado');
+    window.location.href = "login.html";
+}
+
+// Função para criar item no DOM
+function criarItem(categoria, c, index) {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+        <strong>${c.nome}</strong> (${categoria})<br>
+        ${c.endereco}<br>
+        ${c.telefone || ''}<br>
+        <iframe src="https://www.google.com/maps/embed/v1/place?key=SUA_CHAVE_API&q=${encodeURIComponent(c.endereco)}" allowfullscreen></iframe>
+        <button onclick="removerItem('${categoria}', ${index})" style="background:#dc3545;margin-top:5px;">Remover</button>
+    `;
+    return div;
+}
+
+// Carregar dados do localStorage
+function carregarItens() {
+    document.getElementById('listaItens').innerHTML = '';
+    ['comercios','servicos','escolas'].forEach(cat => {
+        const dados = JSON.parse(localStorage.getItem(cat) || '[]');
+        dados.forEach((c,i)=>{
+            document.getElementById('listaItens').appendChild(criarItem(cat, c, i));
+        });
+    });
+}
+
+// Remover item
+function removerItem(categoria, index){
+    const dados = JSON.parse(localStorage.getItem(categoria) || '[]');
+    dados.splice(index,1);
+    localStorage.setItem(categoria, JSON.stringify(dados));
+    carregarItens();
+}
+
+// Cadastrar novo item
+document.getElementById('formCadastro').addEventListener('submit', function(e){
+    e.preventDefault();
+    const nome = document.getElementById('nome').value;
+    const endereco = document.getElementById('endereco').value;
+    const telefone = document.getElementById('telefone').value;
+    const categoria = document.getElementById('categoria').value;
+
+    if(!nome || !endereco || !categoria) return alert('Preencha todos os campos!');
+
+    const dados = JSON.parse(localStorage.getItem(categoria) || '[]');
+    dados.push({nome,endereco,telefone});
+    localStorage.setItem(categoria, JSON.stringify(dados));
+
+    document.getElementById('formCadastro').reset();
+    carregarItens();
+});
+
+carregarItens();
+</script>
+
+</body>
+</html>

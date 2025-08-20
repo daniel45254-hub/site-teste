@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Admin - No Meu Bairro Tem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: sans-serif; margin: 0; padding: 20px; text-align: center; background-color:#f9f9f9; }
+h1 { margin-bottom: 20px; }
+form { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border:1px solid #ccc; }
+button { padding: 10px 20px; margin-top: 10px; cursor:pointer; border-radius:5px; border:none; background-color:#007BFF; color:white; }
+button:hover { background-color:#0056b3; }
+</style>
+</head>
+<body>
+
+<h1>Admin - Inserir Informações</h1>
+
+<form id="formAdmin">
+    <label>Categoria:</label>
+    <select id="categoria">
+        <option value="comercios">Comércio</option>
+        <option value="servicos">Serviços</option>
+        <option value="escolas">Escolas</option>
+    </select>
+    <label>Nome:</label>
+    <input type="text" id="nome" required>
+    <label>Endereço:</label>
+    <input type="text" id="endereco" required>
+    <label>Telefone:</label>
+    <input type="text" id="telefone">
+    <button type="submit">Adicionar</button>
+</form>
+
+<script>
+document.getElementById('formAdmin').addEventListener('submit', function(e){
+    e.preventDefault();
+    const categoria = document.getElementById('categoria').value;
+    const nome = document.getElementById('nome').value.trim();
+    const endereco = document.getElementById('endereco').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+
+    if(nome && endereco){
+        const lista = JSON.parse(localStorage.getItem(categoria) || '[]');
+        lista.push({nome, endereco, telefone});
+        localStorage.setItem(categoria, JSON.stringify(lista));
+        alert('Informação adicionada!');
+        this.reset();
+    }
+});
+</script>
+
+</body>
+</html>
